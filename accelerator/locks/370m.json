@@ -1,0 +1,28 @@
+{
+  "repository": "ridger/MMfreeLM-370M",
+  "revision": "4c799d7e1fcc66093a27acf36ab2faffd8bb9626",
+  "reference_repository": "ridgerchu/matmulfreellm",
+  "reference_revision": "8222c153636c04bc322f1c99d927ff4499c40a06",
+  "files": {
+    "config.json": {
+      "sha256": "9a1d0a2599aa365e2844db3c58e1c6b4656570d027725d4d38e5d76e16239263",
+      "size": 738
+    },
+    "model.safetensors": {
+      "sha256": "4a69e11b1c0e748eeea873d70942eaff0fe1603dbb3d0d6b872797ad5658f120",
+      "size": 748256328
+    },
+    "special_tokens_map.json": {
+      "sha256": "6fa06efa2785e450051989a6f8fb4416b10149ded485ddd3f127a40734f5cfd0",
+      "size": 414
+    },
+    "tokenizer.json": {
+      "sha256": "bdc45dc7f18a5c55e0dcb36f4f187a7c429d6aaa1693a17d20422b85081642d9",
+      "size": 1795331
+    },
+    "tokenizer_config.json": {
+      "sha256": "747ec99bae3fd9d7bf9c3b9172e5ca0d82ca0d23d64a58ef1752b612f196817b",
+      "size": 967
+    }
+  }
+}

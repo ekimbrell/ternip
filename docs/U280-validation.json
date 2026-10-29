@@ -1,0 +1,164 @@
+{
+  "base_commit": "db37abbe7a1319c1dcbb92f2ff2f94a31a1f6086",
+  "status": "partial-implementation-RTL-tile-cosimulation-and-portable-quality-validated",
+  "python_tests": {
+    "passed": 34
+  },
+  "rtl_elaboration": {
+    "tool": "pyslang 9.1.0",
+    "errors": 0,
+    "warnings": 287
+  },
+  "rtl_simulation": {
+    "tool": "Verilator 5.032",
+    "broadcast_cycles": 10000,
+    "accepted_beats": 3413,
+    "lane_deliveries": 6778,
+    "int8_add_sub_pairs": 65536,
+    "int16_add_sub_random_pairs": 20000
+  },
+  "portable_device": {
+    "compiler": "g++ -std=c++17 -O2 -ffp-contract=off",
+    "synthetic_recurrent_tokens": "pass",
+    "real_checkpoint": "370M upstream-bf16 weights",
+    "real_model_lanes": 2,
+    "real_model_steps": 1,
+    "greedy_token_ids": [
+      [
+        28705
+      ],
+      [
+        28705
+      ]
+    ],
+    "state_max_abs_error": 1.1444091796875e-05,
+    "bit_exact_to_graph_reference": false,
+    "bit_exact_RTL_tiles_to_portable_controller": true
+  },
+  "checkpoint_sha256": "4a69e11b1c0e748eeea873d70942eaff0fe1603dbb3d0d6b872797ad5658f120",
+  "model_build_hash": "87451eb5cdf5dae2cebd5d6e3494eb282240291573fb164a4a599656c7d73305",
+  "allocations": {
+    "parameters_bytes": 132333568,
+    "program_bytes": 49152,
+    "scratch_bytes_per_lane": 200704,
+    "state_bytes_per_lane": 98304,
+    "weights_bytes": 85262336
+  },
+  "sweep": {
+    "candidates": 396,
+    "qualified_winner": null
+  },
+  "gates": {
+    "full_core_RTL_functional": "tile instruction path validated; other FUs need broader coverage",
+    "RTL_model_controller": false,
+    "quality_perplexity": true,
+    "hardware_emulation": false,
+    "routed_timing": false,
+    "hardware": false
+  },
+  "limitations": [
+    "Full-model co-simulation uses actual RTL integer tiles and portable C++ controller/vector operations",
+    "Synthesized AMD floating-point operations remain unvalidated",
+    "No Vivado/Vitis installation detected; no XO/xclbin or routed timing evidence",
+    "XRT host and platform metadata adapter validated only with mocks",
+    "Full hardware cycle/stall counter set and on-card performance measurements remain outstanding"
+  ],
+  "quality": {
+    "passed": true,
+    "scope": "portable numerical contract; vendor FPGA FP32 operators remain unvalidated",
+    "candidate_perplexity": 20.955623350962025,
+    "reference_perplexity": 20.83453462565074,
+    "relative_degradation": 0.0058119236876165775,
+    "windows": 163,
+    "window": 2048,
+    "scored_tokens": 333661
+  },
+  "rtl_model_cosimulation": {
+    "scope": "RTL ternary tiles with portable C++ controller and FP32 vector operations",
+    "hardware_qualified": false,
+    "model_hash": "87451eb5cdf5dae2cebd5d6e3494eb282240291573fb164a4a599656c7d73305",
+    "lanes": 2,
+    "steps": 1,
+    "cycles": 4449481,
+    "response_beats": 88468,
+    "comparisons": {
+      "state": {
+        "byte_identical": true,
+        "bytes": 196608,
+        "sha256": "35893ddb3de7433d8a8d1086f104c11ef6513064b8f63455d7f2a690d6de77e7"
+      },
+      "scratch": {
+        "byte_identical": true,
+        "bytes": 372864,
+        "sha256": "0a53a82dd011dab34da77a2bd289197f4f884e5ce2a705220590bd052a7c2e62"
+      },
+      "control": {
+        "byte_identical": true,
+        "bytes": 1024,
+        "sha256": "f0d6d52709e615d262c24371ed9dfc6fd7f8fd7c796bd45461f814e3bc31a9c6"
+      }
+    }
+  },
+  "fixed_point_screening": {
+    "scope": "Exploratory vector-boundary rounding, not a complete fixed-point implementation",
+    "split": "validation",
+    "windows": 8,
+    "qualification_eligible": false,
+    "perplexity": {
+      "upstream": 15.648641856423936,
+      "fp32_screen": 15.751383784537792,
+      "q32f8_boundary_screen": 15.717514761411536,
+      "q32f16_boundary_screen": 15.74482216271145
+    }
+  },
+  "artifact_paths": {
+    "corrected_model": "build/u280/370m-bf16weights",
+    "corrected_device": "build/u280/370m-bf16-device",
+    "quality": "build/u280/reports/quality-gate.json",
+    "real_model_rtl": "build/u280/reports/370m-bf16-rtl-report.json",
+    "ddr_target": "build/u280/ddr-rtl-target/target.json",
+    "hbm_target": "build/u280/hbm-rtl-target/target.json"
+  },
+  "rtl_model_configurations": [
+    {
+      "ternary_parallelism": 256,
+      "vector_parallelism": 8,
+      "passed": true
+    },
+    {
+      "ternary_parallelism": 128,
+      "vector_parallelism": 4,
+      "passed": true
+    },
+    {
+      "ternary_parallelism": 256,
+      "vector_parallelism": 16,
+      "passed": true,
+      "exact_portable_comparison": true
+    }
+  ],
+  "upstream_integration": {
+    "checked_on": "2026-10-29",
+    "upstream_commit": "12c4222a41c26cb9ef8ab936ffa8c9e8441bf63d",
+    "branch": "eric_U280_branch",
+    "status": "software-and-RTL-cosimulation-passed",
+    "python_tests_passed": 34,
+    "elaboration": {
+      "exit_code": 0,
+      "warnings": 287,
+      "errors": 0
+    },
+    "broadcast_and_arithmetic_rtl": "passed",
+    "portable_controller": "passed",
+    "rtl_controller_cosimulation": {
+      "lanes": 2,
+      "ternary_parallelism": 256,
+      "vector_parallelism": 8,
+      "protocol_transactions": 16,
+      "state_scratch_control_byte_identical": true
+    },
+    "full_370m_and_perplexity_rerun": false,
+    "hardware_qualified": false,
+    "report_directory": "build/u280/upstream-test-20261027-175533"
+  }
+}

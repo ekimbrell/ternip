@@ -44,7 +44,7 @@ module ternip_multioperand_accumulator #(
     parameter ternip_pkg::ternip_cfg_t Cfg = `TERNIP_CFG,
 
     parameter type operand_t = logic signed [8:0],
-    parameter type result_t = ternip_types#(Cfg)::fixed_point_t,
+    parameter type result_t = logic signed [Cfg.FixedPointPrecision-1:0],
     parameter int NUM_OPERANDS = 16,
     parameter int NEXT_STAGE_FANIN = 4,
     parameter int D = Cfg.D
@@ -83,8 +83,8 @@ function automatic int NumOperandsPerStage(int stage);
     return (NEXT_STAGE_FANIN**(NumStages-stage));
 endfunction
 
-// final_pipeline: NumStages+1 bits — tracks in_final_i; extra bit lets last data accumulate
-// valid_pipeline: NumStages bits — tracks in_valid_i, aligned with data_q[NumStages-1]
+// final_pipeline: NumStages+1 bits â€” tracks in_final_i; extra bit lets last data accumulate
+// valid_pipeline: NumStages bits â€” tracks in_valid_i, aligned with data_q[NumStages-1]
 logic [NumStages:0] final_pipeline_d, final_pipeline_q;
 logic [NumStages-1:0] valid_pipeline_d, valid_pipeline_q;
 pipeline_data_t [NumStages-1:0][OperandCapacity-1:0] data_d, data_q;
@@ -120,7 +120,7 @@ logic [$bits(result_t)-1:0] fifo_out_data;
 
 assign fifo_in_data = clipped_result;
 
-// Registered output stage — breaks combinational path from FIFO async-read memory to out_result_o.
+// Registered output stage â€” breaks combinational path from FIFO async-read memory to out_result_o.
 // fifo_out_ready: pop from FIFO when the output register is empty or being consumed this cycle.
 logic    out_valid_d, out_valid_q;
 result_t out_result_d, out_result_q;
@@ -166,7 +166,7 @@ always_comb begin
     end
 end
 
-// Data path — always computes, no stalling
+// Data path â€” always computes, no stalling
 always_comb begin
     data_d = '0;
     for (int stage = 0; stage < NumStages; stage++) begin
@@ -182,7 +182,7 @@ always_comb begin
     end
 end
 
-// Accumulator — gated by pipeline_data_valid at the narrow output
+// Accumulator â€” gated by pipeline_data_valid at the narrow output
 typedef logic signed [AccumulatorWidth:0] unclipped_t;
 always_comb begin
     automatic pipeline_data_t pipeline_addend = pipeline_data_valid ? data_q[NumStages-1][0] : '0;
@@ -194,7 +194,7 @@ always_comb begin
     if (unclipped < AccumulatorMin) accumulator_d = AccumulatorMin;
 end
 
-// Pipeline registers — always advance, no stall
+// Pipeline registers â€” always advance, no stall
 always_ff @(posedge clk_i) begin
     if (!rst_ni) begin
         final_pipeline_q <= '0;

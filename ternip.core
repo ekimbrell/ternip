@@ -3,20 +3,16 @@ name: sifferman::ternip:0.1.0
 description: RTL accelerator for MatmulFree LLM inference using ternary weight operations
 license: BSD-3-Clause
 
-provider:
-  name: github
-  user: sifferman
-  repo: ternip
-  version: 4ae6b4793ca86c6bd5d54f06c2b6b904939a3b33
-
 filesets:
   rtl:
+    depend: [local:deps:basejump_stl:0.0.1]
     files:
-      - rtl/ternip_config_pkg.sv
       - rtl/ternip_pkg.sv
+      - rtl/math/sig_pkg.sv
       - rtl/ternip_types.sv
       - rtl/ternip_readmem_path.svh : {is_include_file : true}
       - rtl/ternip_vector_registers.sv
+      - rtl/common/ternip_fixed_latency_equalizer.sv
       - rtl/common/ternip_gearbox_fifo.sv
       - rtl/common/ternip_multioperand_accumulator.sv
       - rtl/common/ternip_pipelined_interconnect.sv
@@ -47,8 +43,29 @@ filesets:
       - rtl/ternip/ternip_core.sv
     file_type: systemVerilogSource
 
+  tile_integration:
+    files:
+      - rtl/accelerator/ternip_tile_lane.sv
+      - rtl/accelerator/ternip_weight_broadcast.sv
+      - rtl/accelerator/ternip_tile_group.sv
+    file_type: systemVerilogSource
+
+parameters:
+  TERNIP_CFG:
+    datatype: str
+    paramtype: vlogdefine
+    default: "ternip_pkg::RegressionCfg"
+    description: Explicit configuration expression; override for integration
+
 targets:
   default:
     filesets:
       - rtl
+    parameters: [TERNIP_CFG]
     toplevel: ternip_core
+
+  fpga_integration:
+    description: Free-running tile stream kernel; use accelerator/scripts/build.py for the U280 platform
+    filesets: [rtl, tile_integration]
+    parameters: [TERNIP_CFG]
+    toplevel: ternip_tile_group

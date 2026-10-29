@@ -131,14 +131,21 @@ end
 
 `ifndef SYNTHESIS
 
-// Ensure that correct latency is achieved
-property fixed_latency_p;
-    @(posedge clk_i) disable iff (!rst_ni)
-    (in_ready_o && in_valid_i) |-> ##NumCycles out_valid_o;
-endproperty
-
-assert property (fixed_latency_p)
-    else $fatal(0, "latency deviated from the fixed %0d cycles", NumCycles);
+// Equivalent cycle-history check to the delayed SVA implication. Keeping the
+// history explicit also permits simulators without parameterized ## support.
+if (NumCycles > 0) begin : g_latency_check
+    logic [NumCycles-1:0] accepted;
+    always_ff @(posedge clk_i) begin
+        if (!rst_ni) accepted <= '0;
+        else begin
+            accepted[0] <= in_ready_o && in_valid_i;
+            for (int cycle=1; cycle<NumCycles; cycle++)
+                accepted[cycle] <= accepted[cycle-1];
+            if (accepted[NumCycles-1])
+                assert(out_valid_o) else $fatal(0, "latency deviated from the fixed %0d cycles", NumCycles);
+        end
+    end
+end
 
 `endif
 

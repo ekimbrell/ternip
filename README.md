@@ -25,7 +25,12 @@ This project is licensed under the [BSD 3-Clause License](LICENSE) and is free t
 
 Configuration is passed as a threaded `ternip_pkg::ternip_cfg_t` struct parameter (`Cfg`) rather than a global config file.
 
-*Tests and build flow are not currently provided but will be made available shortly.*
+The experimental [U280 integration](docs/U280.md) adds model export, a software
+emulator, a resident HLS controller connected to actual RTL matrix tiles, XRT
+queue code, and regression tests. The portable numerical path passes the 1%
+held-out perplexity gate; RTL/C++ co-simulation matches the portable controller.
+It is **not hardware-qualified**: AMD synthesis/emulation, routed timing and
+on-card throughput measurements remain outstanding.
 
 ## Dependencies
 

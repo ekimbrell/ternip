@@ -1,0 +1,9 @@
+{
+  "repository": "Salesforce/wikitext",
+  "configuration": "wikitext-2-raw-v1",
+  "revision": "b08601e04326c79dfdd32d625aee71d232d685c3",
+  "acceptance_split": "test",
+  "calibration_split": "validation",
+  "window_tokens": 2048,
+  "relative_perplexity_limit": 0.01
+}

@@ -1,0 +1,54 @@
+CAPI=2:
+name: sifferman::ternip:0.1.0
+description: RTL accelerator for MatmulFree LLM inference using ternary weight operations
+license: BSD-3-Clause
+
+provider:
+  name: github
+  user: sifferman
+  repo: ternip
+  version: 4ae6b4793ca86c6bd5d54f06c2b6b904939a3b33
+
+filesets:
+  rtl:
+    files:
+      - rtl/ternip_config_pkg.sv
+      - rtl/ternip_pkg.sv
+      - rtl/ternip_types.sv
+      - rtl/ternip_readmem_path.svh : {is_include_file : true}
+      - rtl/ternip_vector_registers.sv
+      - rtl/common/ternip_gearbox_fifo.sv
+      - rtl/common/ternip_multioperand_accumulator.sv
+      - rtl/common/ternip_pipelined_interconnect.sv
+      - rtl/common/ternip_pipelined_mem.sv
+      - rtl/math/ternip_add.sv
+      - rtl/math/ternip_sub.sv
+      - rtl/math/ternip_mul.sv
+      - rtl/math/ternip_div.sv
+      - rtl/math/ternip_sqrt_int.sv
+      - rtl/math/ternip_sqrt.sv
+      - rtl/math/ternip_starmul.sv
+      - rtl/math/ternip_fixed_point_convert.sv
+      - rtl/math/ternip_round_robin_operation.sv
+      - rtl/math/ternip_csig.sv
+      - rtl/math/ternip_csig_parallelized.sv
+      - rtl/math/ternip_sig.sv
+      - rtl/math/ternip_sig_parallelized.sv
+      - rtl/math/ternip_silu.sv
+      - rtl/math/ternip_silu_parallelized.sv
+      - rtl/fus/ternip_loadstore.sv
+      - rtl/fus/ternip_rms.sv
+      - rtl/fus/ternip_rowwise_operation.sv
+      - rtl/fus/ternip_tmatmul.sv
+      - rtl/axi/s_axi_ternip_const_rd.v
+      - rtl/axi/s_axi_ternip_rst.v
+      - rtl/axi/s_axi_ternip_wait_for_interrupt.v
+      - rtl/axi/s_axi_ternip_write_byte.v
+      - rtl/ternip/ternip_core.sv
+    file_type: systemVerilogSource
+
+targets:
+  default:
+    filesets:
+      - rtl
+    toplevel: ternip_core

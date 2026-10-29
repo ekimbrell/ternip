@@ -1,0 +1,22 @@
+{
+  "status": "candidate-not-platform-verified",
+  "vivado": "2022.2",
+  "vitis": "2022.2",
+  "xrt": "2.14.354",
+  "platform": "xilinx_u280_gen3x16_xdma_1_202211_1",
+  "part": "xcu280-fsvh2892-2L-e",
+  "rtl_base_commit": "db37abb",
+  "host_python_tested": "3.12",
+  "numpy_tested": "1.26.4",
+  "quality_python": "3.10.16",
+  "full_core_simulation": {
+    "distribution": "verilator",
+    "distribution_version": "5.48.0",
+    "platform": "manylinux x86_64",
+    "wheel_sha256": "37c4baba6a268f6e0a15b4917dbbc45dcf23ddea1498d059f8259a34072ac427",
+    "binary_revision": "vUNKNOWN-built20260516-4e853d8",
+    "binary_banner": "5.49",
+    "note": "Package version and binary version differ; pin artifact, not banner alone"
+  },
+  "integrated_upstream_commit": "12c4222a41c26cb9ef8ab936ffa8c9e8441bf63d"
+}

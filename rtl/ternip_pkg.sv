@@ -138,6 +138,19 @@ typedef struct packed {
     div_impl_e      DivisionImplementation;
 } ternip_cfg_t;
 
+// A reproducible single-vector regression configuration. This is NOT the
+// selected 370M numerical format; that choice requires a quality report.
+localparam ternip_cfg_t RegressionCfg = '{
+    D: 256, TmatmulParallelism: 128, VectorParallelism: 8, LutParallelism: 8,
+    FixedPointPrecision: 16, FixedPointExponent: -8,
+    SigmoidModel: SIGMOID_APPROXIMATE_POWER2_SLOPE_1ST_ORDER,
+    BatchSize: 1, NumVectorRegisters: 16, ImmediateWidth: 16,
+    DdrAddressWidth: 64, InstructionWidth: 128, DdrDataWidth: 512,
+    AxiAuxDataWidth: 32, InstrFetchWidth: 128, CoreInterconnectNumStages: 2,
+    MultiplicationImplementation: MUL_BSG, DivisionImplementation: DIV_BSG
+};
+
+
 // ================================================================================= //
 // Instruction fields and widths                                                     //
 // The instruction_t type is derived from the user base struct in ternip_types#(Cfg) //

@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "board": "u280",
+  "platform": "xilinx_u280_gen3x16_xdma_1_202211_1",
+  "part": "xcu280-fsvh2892-2L-e",
+  "clock_mhz": 300,
+  "core_batch_size": 1,
+  "lanes_per_group": 1,
+  "ternary_parallelism": 256,
+  "vector_parallelism": 8,
+  "status": "rtl-cpp-cosimulation-candidate-unbuilt",
+  "groups": [
+    {
+      "cu": "ternip_group_0",
+      "slr": 0,
+      "ports": {
+        "weights": "HBM[0]",
+        "state": "HBM[1]",
+        "control": "HBM[2]"
+      }
+    }
+  ],
+  "backend": "rtl-tiles"
+}
