@@ -40,7 +40,7 @@ if rtl:
     from package_inputs import generate
     manifest,rtl_sources=generate(t,a.bsg,out/'rtl')
     record['rtl_sources_sha256']={str(p.relative_to(root)) if p.is_relative_to(root) else p.name:digest(p.read_bytes()) for p in rtl_sources}
-    for name in ('package_rtl.tcl','package_inputs.py','rtl_sources.py'):
+    for name in ('package_rtl.tcl','package_inputs.py','rtl_sources.py','fixed_types.py'):
         record['recipe_sha256'][name]=digest((root/'accelerator/scripts'/name).read_bytes())
     record['vivado_version']=subprocess.check_output(['vivado','-version'],text=True)
     if '2022.2' not in record['vivado_version']: raise SystemExit('Vivado 2022.2 is required')

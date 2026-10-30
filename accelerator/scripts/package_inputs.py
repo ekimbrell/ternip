@@ -1,6 +1,7 @@
 """Generate a fixed-parameter RTL wrapper and Vivado's source manifest."""
 from pathlib import Path
 from rtl_sources import sources
+from fixed_types import specialize
 
 def tcl_word(path):
     value=Path(path).resolve().as_posix()
@@ -10,7 +11,8 @@ def tcl_word(path):
 
 def generate(target,bsg,output):
     out=Path(output).resolve();out.mkdir(parents=True,exist_ok=True)
-    files,includes=sources(bsg)
+    originals,includes=sources(bsg)
+    files=specialize(originals,target,out/"fixed-types")
     headers=[Path(bsg).resolve()/'bsg_misc/bsg_defines.sv',Path(__file__).resolve().parents[2]/'rtl/ternip_readmem_path.svh']
     wrapper=out/'ternip_rtl.sv'
     wrapper.write_text(f"""// Generated from the hashed target descriptor.
@@ -27,4 +29,4 @@ endmodule
     manifest.write_text('set rtl_sources [list '+' '.join(tcl_word(p) for p in files+[wrapper])+']\n'+
                         'set rtl_headers [list '+' '.join(tcl_word(p) for p in headers)+']\n'+
                         'set rtl_includes [list '+' '.join(tcl_word(p) for p in includes)+']\n')
-    return manifest,files+[wrapper]+headers
+    return manifest,originals+files+[wrapper]+headers

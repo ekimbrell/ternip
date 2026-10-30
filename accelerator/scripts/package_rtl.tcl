@@ -6,13 +6,15 @@ source [lindex $argv 0]
 set part [lindex $argv 1]
 set output [file normalize [lindex $argv 2]]
 create_project ternip_rtl [file join $output project] -part $part
+set_property source_mgmt_mode None [current_project]
 add_files -norecurse $rtl_sources
+set_property file_type SystemVerilog [get_files $rtl_sources]
 add_files -norecurse $rtl_headers
 set_property file_type {Verilog Header} [get_files $rtl_headers]
 set_property include_dirs $rtl_includes [current_fileset]
 set_property verilog_define {TERNIP_CFG=ternip_pkg::RegressionCfg} [current_fileset]
 set_property top ternip_rtl [current_fileset]
-update_compile_order -fileset sources_1
+
 ipx::package_project -root_dir [file join $output ip] -vendor ternip.org -library accelerator -taxonomy /KernelIP -import_files
 set core [ipx::current_core]
 set_property name ternip_rtl $core
@@ -28,6 +30,8 @@ foreach name {command response} {
     ipx::associate_bus_interfaces -busif $name -clock ap_clk $core
 }
 ipx::associate_bus_interfaces -clock ap_clk -reset ap_rst_n $core
+# Vitis assigns the descriptor's clock at link time. A fixed FREQ_HZ on the
+# packaged interface can conflict with the platform's default kernel clock.
 set_property supported_families [list [get_property FAMILY [get_parts $part]] Production] $core
 ipx::create_xgui_files $core
 ipx::update_checksums $core

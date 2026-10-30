@@ -59,7 +59,7 @@
   "limitations": [
     "Full-model co-simulation uses actual RTL integer tiles and portable C++ controller/vector operations",
     "Synthesized AMD floating-point operations remain unvalidated",
-    "No Vivado/Vitis installation detected; no XO/xclbin or routed timing evidence",
+    "Vivado/Vitis HLS 2023.2 installed, but U280 device support, v++, platforminfo and the U280 development platform are missing; no U280 xclbin or routed timing evidence",
     "XRT host and platform metadata adapter validated only with mocks",
     "Full hardware cycle/stall counter set and on-card performance measurements remain outstanding"
   ],
@@ -160,5 +160,79 @@
     "full_370m_and_perplexity_rerun": false,
     "hardware_qualified": false,
     "report_directory": "build/u280/upstream-test-20261027-175533"
+  },
+  "component_checks": {
+    "checked_on": "2026-10-29",
+    "toolchain": "Vivado/Vitis HLS 2023.2",
+    "diagnostic_part": "xc7k70tfbv676-1",
+    "requested_part": "xcu280-fsvh2892-2L-e",
+    "u280_part_installed": false,
+    "vitis_linker_and_platform_available": false,
+    "hardware_qualified": false,
+    "python_tests_passed": 34,
+    "fixed_type_rtl_cosimulation": {
+      "status": "passed",
+      "lanes": 2,
+      "ternary_parallelism": 256,
+      "vector_parallelism": 8,
+      "state_scratch_control_byte_identical": true,
+      "report_directory": "build/u280/vivado-check-20261029-162358/fixed-model-test"
+    },
+    "mismatched_configuration_rejected": {
+      "verilator": true,
+      "vivado": true
+    },
+    "rtl_kernel_packaging": "passed-diagnostic-only",
+    "report_directory": "build/u280/vivado-check-20261029-2126",
+    "reviewed_on": "2026-10-30",
+    "rtl_synthesis": {
+      "status": "completed-diagnostic-only",
+      "luts": 13782,
+      "registers": 27778,
+      "ramb36": 4,
+      "dsps": 0,
+      "requested_mhz": 300,
+      "setup_wns_ns": -0.932,
+      "hold_whs_ns": 0.135,
+      "setup_timing_met": false,
+      "routed": false,
+      "unconstrained_internal_endpoints": 0,
+      "combinational_loops": 0,
+      "ports_missing_input_delay": 515,
+      "ports_missing_output_delay": 514
+    },
+    "hls_synthesis": {
+      "status": "completed-diagnostic-only",
+      "estimated_luts": 219528,
+      "estimated_ffs": 307327,
+      "estimated_bram18k": 136,
+      "estimated_dsps": 50,
+      "estimated_period_ns": 3.462,
+      "loop_constraints_satisfied": false,
+      "fits_diagnostic_device": false,
+      "u280_fit_verified": false
+    },
+    "artifacts": {
+      "rtl_checkpoint": {
+        "path": "build/u280/vivado-check-20261029-2126/rtl/synthesized.dcp",
+        "sha256": "447e9424b4e3863c2ea689c710f55d464346de70841389cefc9a3b410783d417"
+      },
+      "rtl_utilization": {
+        "path": "build/u280/vivado-check-20261029-2126/rtl/utilization.rpt",
+        "sha256": "c97fe067be5c1cf39347235c323c87ceb738e88c876baa171852264e611b7b2b"
+      },
+      "rtl_timing": {
+        "path": "build/u280/vivado-check-20261029-2126/rtl/timing.rpt",
+        "sha256": "b1e52ed246c7267fb9ba032f8402294917bf854e99032ffc106713bf39cfea31"
+      },
+      "hls_report": {
+        "path": "build/u280/vivado-check-20261029-2126/hls/project/solution/syn/report/ternip_group_csynth.xml",
+        "sha256": "1d0565c1645906809d3bebf17113917b805d63f8f712ccc00427c5ddb8e2965e"
+      },
+      "kernel_xo": {
+        "path": "build/u280/vivado-check-20261029-2126/package-verified/tiles.xo",
+        "sha256": "d02bf75c4c6bf72ddcb610165d1ae1e02fd172d7bfa380c2552e8d7a001b0f12"
+      }
+    }
   }
 }

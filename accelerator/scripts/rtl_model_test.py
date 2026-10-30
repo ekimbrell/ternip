@@ -19,9 +19,14 @@ p.add_argument('--output',type=Path,required=True)
 p.add_argument('--case',type=Path,required=True,help='Device test directory containing config.bin')
 p.add_argument('--parallelism',type=int,choices=(128,256),default=256)
 p.add_argument('--vector-parallelism',type=int,choices=(4,8,16),default=8)
+p.add_argument('--fixed-types',action='store_true',help='Test the exact FPGA type specialization instead of parameterized classes')
 p.add_argument('--jobs',type=int,default=2)
 a=p.parse_args();out=a.output.resolve();out.mkdir(parents=True,exist_ok=True)
 files,includes=sources(a.bsg)
+original_files=list(files)
+if a.fixed_types:
+    from fixed_types import specialize
+    files=specialize(files,dict(ternary_parallelism=a.parallelism,vector_parallelism=a.vector_parallelism),out/"fixed-types")
 # A rerun must never inherit a previous passing result after a failed build.
 (out/'result.json').unlink(missing_ok=True)
 case=a.case.resolve()
@@ -67,7 +72,7 @@ for name in ('state.out','scratch.out','control.out'):
     actual=(case/name).read_bytes();expected=(portable_case/name).read_bytes()
     if actual!=expected: raise RuntimeError('RTL/portable byte mismatch: '+name)
     outputs[name]={'byte_identical':True,'bytes':len(actual),'sha256':hashlib.sha256(actual).hexdigest()}
-source_paths=files+list((ROOT/'accelerator/hls').glob('*.hpp'))+[
+source_paths=files+original_files+[ROOT/'accelerator/scripts/fixed_types.py']+list((ROOT/'accelerator/hls').glob('*.hpp'))+[
     ROOT/'accelerator/hls'/name for name in ('ternip_group.cpp','cpu_runner.cpp','rtl_transport.cpp')]
 source_paths += [ROOT/'rtl/ternip_readmem_path.svh',a.bsg.resolve()/'bsg_misc/bsg_defines.sv',
                  ROOT/'dv/accelerator/tile_group_test.cpp',Path(__file__).resolve()]
@@ -75,5 +80,5 @@ source_hashes={str(p.relative_to(ROOT)) if p.is_relative_to(ROOT) else str(p):
                hashlib.sha256(p.read_bytes()).hexdigest() for p in source_paths}
 (out/'result.json').write_text(json.dumps(dict(status='rtl-cpp-cosimulation-passed',simulator=version,
     lanes=2,tile=256,ternary_parallelism=a.parallelism,vector_parallelism=a.vector_parallelism,
-    hardware_qualified=False,input_sha256=input_hashes,source_sha256=source_hashes,
+    hardware_qualified=False,fixed_types=a.fixed_types,input_sha256=input_hashes,source_sha256=source_hashes,
     outputs=outputs),indent=2)+'\n')
