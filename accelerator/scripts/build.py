@@ -1,29 +1,29 @@
 """Build a model controller and optionally real RTL tiles on an installed U280 platform."""
 import argparse
-import hashlib
 import json
 from pathlib import Path
-import shutil
 import subprocess
 import sys
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from ternip_accel.target import validate,link_config
 from ternip_accel.platform import inspect_platform
 from ternip_accel.compiler import canonical,digest
+from ternip_accel.environment import audit
 root=Path(__file__).resolve().parents[2]
 p=argparse.ArgumentParser()
 p.add_argument('--target',required=True);p.add_argument('--output',required=True)
 p.add_argument('--bsg',type=Path,help='Pinned BaseJump sources (required for rtl-tiles)')
+p.add_argument('--platform-file',type=Path,required=True,help='Installed development .xpfm matching the target')
 p.add_argument('--mode',choices=['sw_emu','hw_emu','hw'],default='hw_emu')
 a=p.parse_args();t=validate(json.loads(Path(a.target).read_text()))
 rtl=t.get('backend')=='rtl-tiles'
 if rtl and (not a.bsg or a.mode=='sw_emu'): raise SystemExit('RTL tiles require --bsg and hw_emu or hw')
-for tool in (('v++','platforminfo','vivado') if rtl else ('v++','platforminfo')):
-    if not shutil.which(tool): raise SystemExit(f'{tool} unavailable; no FPGA build performed')
 out=Path(a.output).resolve();out.mkdir(parents=True,exist_ok=False)
+environment=audit(t,out/'environment',platform_file=a.platform_file)
+if environment['blockers']: raise SystemExit('\n'.join(environment['blockers']))
 version=subprocess.check_output(['v++','--version'],text=True)
 if '2022.2' not in version: raise SystemExit('This build recipe is pinned to Vitis 2022.2')
-platform=subprocess.check_output(['platforminfo','-p',t['platform'],'--json'],text=True)
+platform=(out/'environment/platforminfo.log').read_text()
 (out/'platforminfo.json').write_text(platform)
 # Fail closed if the installed platform lacks explicit required topology.
 # Unsupported vendor schemas require an audited parser update, not a bypass.
@@ -33,9 +33,11 @@ contract=inspect_platform(json.loads(platform),t)
 source=root/'accelerator/hls/ternip_group.cpp'
 record=dict(target=t,platform_contract=contract,toolchain=version,platform_sha256=digest(platform.encode()),mode=a.mode,
             source_sha256=digest(source.read_bytes()),header_sha256=digest(source.with_suffix('.hpp').read_bytes()))
+record['environment']=environment
+record['platform_file_sha256']=environment['platform_file_sha256']
 record['hls_headers_sha256']={p.name:digest(p.read_bytes()) for p in source.parent.glob('*.hpp')}
 record['recipe_sha256']={p.name:digest(p.read_bytes()) for p in
-    (Path(__file__),root/'accelerator/scripts/check_timing.tcl',root/'accelerator/ternip_accel/platform.py',root/'accelerator/ternip_accel/target.py')}
+    (Path(__file__),root/'accelerator/scripts/check_timing.tcl',root/'accelerator/ternip_accel/environment.py',root/'accelerator/ternip_accel/platform.py',root/'accelerator/ternip_accel/target.py')}
 if rtl:
     from package_inputs import generate
     manifest,rtl_sources=generate(t,a.bsg,out/'rtl')
@@ -49,7 +51,7 @@ record['build_hash']=digest(canonical(record))
 if rtl:
     subprocess.run(['vivado','-mode','batch','-source',str(root/'accelerator/scripts/package_rtl.tcl'),
                     '-tclargs',str(manifest),t['part'],str(out/'rtl')],cwd=out,check=True)
-common=['v++','-t',a.mode,'--platform',t['platform'],'--save-temps']
+common=['v++','-t',a.mode,'--platform',environment['platform_file'],'--save-temps']
 subprocess.run(common+(['-D','TERNIP_RTL_TILES'] if rtl else [])+['-c','-k','ternip_group','--hls.clock',f"{t['clock_mhz']*1000000}:ternip_group",
     '-D',f"TERNIP_LANES={t['lanes_per_group']}",'-D',f"TERNIP_TERNARY_PARALLELISM={t['ternary_parallelism']}",
     '-D',f"TERNIP_VECTOR_PARALLELISM={t['vector_parallelism']}",'-I',str(source.parent),str(source),'-o',str(out/'kernel.xo')],cwd=out,check=True)

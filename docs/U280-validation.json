@@ -234,5 +234,23 @@
         "sha256": "d02bf75c4c6bf72ddcb610165d1ae1e02fd172d7bfa380c2552e8d7a001b0f12"
       }
     }
+  },
+  "qualification_environment": {
+    "checked_on": "2026-11-02",
+    "status": "blocked-local-build-prerequisites",
+    "report": "build/u280/environment-20261102/environment.json",
+    "python_tests_passed": 46,
+    "timing_hook_real_vivado_negative_test": "passed on prior diagnostic checkpoint; not U280 routing",
+    "timing_hook_report": "build/u280/timing-hook-20261102/tool.log",
+    "host_ram_gb_approx": 16,
+    "host_disk_free_gib_approx": 122,
+    "linux_environment": "WSL2 Ubuntu 26.04",
+    "vendor_2022_2_alveo_requirements": {
+      "ram_gb": 64,
+      "disk_gb": 150,
+      "source": "https://docs.amd.com/r/2022.2-English/ug1393-vitis-application-acceleration/Installation-Requirements"
+    },
+    "full_toolchain_installed": false,
+    "hardware_qualified": false
   }
 }

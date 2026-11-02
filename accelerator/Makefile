@@ -3,6 +3,7 @@ BSG ?= ../build/basejump_stl
 TARGET ?= targets/u280-ddr-rtl.json
 OUT ?= ../build/u280-ddr
 MODE ?= hw_emu
+PLATFORM_FILE ?=
 .PHONY: test lint rtl-test rtl-model-test numerics cpu build
 CPU_CASE ?= ../build/cpu-case
 RTL_CASE ?= ../build/rtl-case
@@ -21,7 +22,8 @@ cpu:
 	../build/cpu_runner $(CPU_CASE)/device
 	$(PYTHON) scripts/check_device_test.py $(CPU_CASE)/device
 build:
-	$(PYTHON) scripts/build.py --target $(TARGET) --output $(OUT) --mode $(MODE) --bsg $(BSG)
+	@test -n "$(PLATFORM_FILE)" || (echo "Set PLATFORM_FILE to the installed U280 development .xpfm"; exit 1)
+	$(PYTHON) scripts/build.py --target $(TARGET) --output $(OUT) --mode $(MODE) --bsg $(BSG) --platform-file "$(PLATFORM_FILE)"
 
 rtl-model-test:
 	$(PYTHON) scripts/prepare_device_test.py $(RTL_CASE)
