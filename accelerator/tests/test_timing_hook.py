@@ -5,8 +5,14 @@ tkinter = pytest.importorskip('tkinter', reason='Timing-hook unit tests require 
 HOOK = Path(__file__).parents[1] / 'scripts/check_timing.tcl'
 
 
-def interpreter(failure='none'):
-    tcl = tkinter.Tcl()
+@pytest.fixture(scope='module')
+def tcl():
+    # Initialize Tcl once before any test changes cwd. Repeated interpreter
+    # startup on Windows can intermittently fail while loading init.tcl.
+    return tkinter.Tcl()
+
+
+def interpreter(tcl, failure='none'):
     tcl.eval('''
 proc report_timing_summary {args} {}
 proc report_utilization {args} {}
@@ -32,13 +38,13 @@ proc get_timing_paths {args} {
 
 
 @pytest.mark.parametrize('failure', ['clocks', 'paths', 'unconstrained', 'unknown_report', 'max', 'min'])
-def test_incomplete_or_failing_timing_is_rejected(monkeypatch, tmp_path, failure):
+def test_incomplete_or_failing_timing_is_rejected(monkeypatch, tmp_path, failure, tcl):
     monkeypatch.chdir(tmp_path)
     with pytest.raises(tkinter.TclError, match='Ternip U280'):
-        interpreter(failure).eval(HOOK.read_text())
+        interpreter(tcl, failure).eval(HOOK.read_text())
 
 
-def test_complete_timing_passes(monkeypatch, tmp_path):
+def test_complete_timing_passes(monkeypatch, tmp_path, tcl):
     monkeypatch.chdir(tmp_path)
-    interpreter().eval(HOOK.read_text())
+    interpreter(tcl).eval(HOOK.read_text())
     assert (tmp_path/'ternip_routed_check_timing.rpt').exists()
